@@ -4,10 +4,17 @@
 
 import extractor
 import cv2
+import logging
+
+import util
 
 validIds = [1, 2, 3, 4, 5, 6, 7, 8]
 
-vid = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+videoCaptureIndex = 0
+if videoCaptureIndex == 1:
+    logging.warning('Attempting to read from USB Camera: make sure it\'s connected')
+
+vid = cv2.VideoCapture(videoCaptureIndex, cv2.CAP_DSHOW)
 
 
 def draw_april_tags(image, tags):
@@ -23,8 +30,9 @@ def draw_april_tags(image, tags):
                  boundary.topLeft, (255, 255, 0), 4)
         cv2.line(image, boundary.topLeft,
                  boundary.bottomLeft, (255, 255, 0), 4)
-        cv2.putText(image, str(tag.id), boundary.center, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
-        cv2.putText(image, f'distance: {tag.directions.distance}', (boundary.center[0], boundary.center[1] + 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+        util.centered_text(image, boundary.center, str(tag.id), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 3, (0, 0))
+        util.centered_text(image, boundary.center, f'{int(tag.directions.distance)}cm away', cv2.FONT_HERSHEY_SIMPLEX,
+                           0.5, (255, 0, 0), 2, (0, 40))
 
 
 while True:

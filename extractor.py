@@ -19,6 +19,8 @@ at_detector = Detector(
     debug=0
 )
 
+focal_length = util.get_focal_length()
+
 
 def extract_boundary(tag):
     center = tag.center
@@ -38,7 +40,7 @@ def extract_directions(tag, boundary):
     avg_bottom_y = (boundary.bottomLeft[1] + boundary.bottomRight[1]) / 2
     avg_bottom_x = (boundary.bottomLeft[0] + boundary.bottomRight[0]) / 2
     height = util.calculate_point_distance((avg_top_x, avg_top_y), (avg_bottom_x, avg_bottom_y))
-    estimated_distance = util.estimate_distance(height)
+    estimated_distance = util.estimate_distance(focal_length, height) if height > 0 else -1
 
     return Directions(height, estimated_distance)
 
