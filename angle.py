@@ -1,7 +1,3 @@
-# -----------------------------------------------------------
-# (c) 2023 Grant O
-# -----------------------------------------------------------
-
 import extractor
 import cv2
 import logging
@@ -10,7 +6,7 @@ import util
 
 validIds = [1, 2, 3, 4, 5, 6, 7, 8]
 
-videoCaptureIndex = 0
+videoCaptureIndex = 1
 if videoCaptureIndex == 1:
     logging.warning('Attempting to read from USB Camera: make sure it\'s connected')
 
@@ -37,11 +33,6 @@ def draw_april_tags(image, tags):
 
 while True:
     ret, frame = vid.read()
-
-    if frame is None:
-        logging.error('Nothing to read from camera. Is the index correct?')
-        break
-
     april_tags = extractor.extract_april_tags(frame)
     result_img = frame.copy()
     draw_april_tags(result_img, april_tags)

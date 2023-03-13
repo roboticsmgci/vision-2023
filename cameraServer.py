@@ -2,21 +2,22 @@
 # (c) 2023 Grant O
 # -----------------------------------------------------------
 
-import extractor
 import cv2
-import logging
-
+from cscore import CameraServer, VideoSource
+from networktables import NetworkTablesInstance
+import extractor
 import util
 
+cap = cv2.VideoCapture(0)
+cap.set(10, 0.1)
+cs = CameraServer.getInstance()
+outputStream = cs.putVideo("Cam1", 640, 480)
+
+ntinst = NetworkTablesInstance.getDefault()
+ntinst.startClientTeam(8574)
+ret, frame = cap.read()
+
 validIds = [1, 2, 3, 4, 5, 6, 7, 8]
-
-videoCaptureIndex = 0
-if videoCaptureIndex == 1:
-    logging.warning('Attempting to read from USB Camera: make sure it\'s connected')
-
-vid = cv2.VideoCapture(videoCaptureIndex, cv2.CAP_DSHOW)
-
-
 def draw_april_tags(image, tags):
     for tag in tags:
         if tag.id not in validIds:  # probably random stuff from mistuned calibration
@@ -36,18 +37,8 @@ def draw_april_tags(image, tags):
 
 
 while True:
-    ret, frame = vid.read()
-
-    if frame is None:
-        logging.error('Nothing to read from camera. Is the index correct?')
-        break
-
+    ret, frame = cap.read()
     april_tags = extractor.extract_april_tags(frame)
     result_img = frame.copy()
     draw_april_tags(result_img, april_tags)
-    cv2.imshow('frame', result_img)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-vid.release()
-cv2.destroyAllWindows()
+    outputStream.putFrame(result_img)

@@ -8,6 +8,7 @@ from boundary import Boundary
 from apriltag import AprilTag
 from directions import Directions
 import util
+import numpy as np
 
 at_detector = Detector(
     families="tag16h5",
@@ -55,3 +56,14 @@ def extract_april_tags(img):
         directions = extract_directions(detectedTag, boundary)
         tags.append(AprilTag(detectedTag.tag_id, boundary, directions))
     return tags
+
+
+retro_lower_limit = np.array([211, 222, 208])
+retro_higher_limit = np.array([211, 222, 208])
+
+
+def extract_retro(img):
+    in_range = cv2.inRange(img, retro_lower_limit, retro_higher_limit)
+    contours, _ = cv2.findContours(in_range, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    cv2.drawContours(img, contours, 0, (0, 255, 0), 3)
+    return in_range
