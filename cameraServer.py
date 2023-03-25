@@ -7,6 +7,8 @@ from cscore import CameraServer, VideoSource
 from networktables import NetworkTablesInstance
 import extractor
 import util
+import json
+
 
 cap = cv2.VideoCapture(0)
 cap.set(10, 0.1)
@@ -14,6 +16,7 @@ cs = CameraServer.getInstance()
 outputStream = cs.putVideo("Cam1", 640, 480)
 
 ntinst = NetworkTablesInstance.getDefault()
+nt = ntinst.getTable("SmartDashBoard")
 ntinst.startClientTeam(8574)
 ret, frame = cap.read()
 
@@ -39,6 +42,10 @@ def draw_april_tags(image, tags):
 while True:
     ret, frame = cap.read()
     april_tags = extractor.extract_april_tags(frame)
+    to_send = {
+        april_tags: april_tags
+    }
+    nt.putNumber('a', 6)
     result_img = frame.copy()
     draw_april_tags(result_img, april_tags)
     outputStream.putFrame(result_img)
